@@ -6,6 +6,7 @@ import com.mycompany.cruddbapp.entity.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -14,21 +15,21 @@ import java.util.logging.Logger;
 public class UserDaoImpl extends AbstractDao implements UserDaoInter {
     private final String getUserByIdSql = "SELECT * "
             + "FROM USERS "
-            + "WHERE ID = ?;";
+            + "WHERE ID = ";
     
     private final String getUsersSql = "SELECT * "
-            + "FROM USERS;";
+            + "FROM USERS";
     
     private final String insertUserSql = "INSERT INTO "
             + "USERS (FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, MONTHLY_SALARY) "
-            + "VALUES (?, ?, ?, ?);";
+            + "VALUES (?, ?, ?, ?)";
     
     private final String updateUserSql = "UPDATE USERS SET "
             + "FIRST_NAME = ?, LAST_NAME = ?, EMAIL_ADDRESS = ?, MONTHLY_SALARY = ? "
-            + "WHERE ID = ?;";
+            + "WHERE ID = ?";
     
     private final String deleteUserSql = "DELETE FROM USERS "
-            + "WHERE ID = ?;";
+            + "WHERE ID = ";
     
     private User getUser(ResultSet resultset) throws Exception {
         int id = resultset.getInt("id");
@@ -43,9 +44,9 @@ public class UserDaoImpl extends AbstractDao implements UserDaoInter {
     public User getUserById(int id) {
         User userResult = null;
         try (Connection connection = getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(getUserByIdSql);
-            preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.getResultSet();
+            Statement statement = connection.createStatement();
+            statement.execute(getUserByIdSql + id + ";");
+            ResultSet resultSet = statement.getResultSet();
             while (resultSet.next()) {
                 userResult = getUser(resultSet);
             }
@@ -59,8 +60,9 @@ public class UserDaoImpl extends AbstractDao implements UserDaoInter {
     public List<User> getUsers() {
         List<User> userListResult = new ArrayList<>();
         try (Connection connection = getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(getUsersSql);
-            ResultSet resultSet = preparedStatement.getResultSet();
+            Statement statement = connection.createStatement();
+            statement.execute(getUsersSql);
+            ResultSet resultSet = statement.getResultSet();
             while (resultSet.next()) {
                 userListResult.add(getUser(resultSet));
             }
@@ -104,9 +106,8 @@ public class UserDaoImpl extends AbstractDao implements UserDaoInter {
     @Override
     public boolean deleteUser(int id) {
         try (Connection connection = getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(deleteUserSql);
-            preparedStatement.setInt(1, id);
-            return preparedStatement.execute();
+            Statement statement = connection.createStatement();
+            return statement.execute(deleteUserSql + id + ";");
         } catch (Exception ex) {
             Logger.getLogger(UserDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
