@@ -61,7 +61,7 @@ public class UserDaoImpl extends AbstractDao implements UserDaoInter {
         List<User> userListResult = new ArrayList<>();
         try (Connection connection = getConnection()) {
             Statement statement = connection.createStatement();
-            statement.execute(getUsersSql);
+            statement.execute(getUsersSql + ";");
             ResultSet resultSet = statement.getResultSet();
             while (resultSet.next()) {
                 userListResult.add(getUser(resultSet));
@@ -75,7 +75,7 @@ public class UserDaoImpl extends AbstractDao implements UserDaoInter {
     @Override
     public boolean insertUser(User user) {
         try (Connection connection = getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(insertUserSql);
+            PreparedStatement preparedStatement = connection.prepareStatement(insertUserSql + ";");
             preparedStatement.setString(1, user.getFirstName());
             preparedStatement.setString(2, user.getLastName());
             preparedStatement.setString(3, user.getEmailAddress());
@@ -90,7 +90,7 @@ public class UserDaoImpl extends AbstractDao implements UserDaoInter {
     @Override
     public boolean updateUser(User user) {
         try (Connection connection = getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(updateUserSql);
+            PreparedStatement preparedStatement = connection.prepareStatement(updateUserSql + ";");
             preparedStatement.setString(1, user.getFirstName());
             preparedStatement.setString(2, user.getLastName());
             preparedStatement.setString(3, user.getEmailAddress());
